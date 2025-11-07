@@ -1,70 +1,119 @@
-# Getting Started with Create React App
+ Front-end React - Mon Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Ce projet est le front-end d’une application web de gestion d’actualités et d’utilisateurs.  
+Il est développé avec **React**, **Axios** pour les requêtes HTTP, et **CSS/Tailwind** pour le style.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Structure du projet
 
-### `npm start`
+- `src/pages/`
+  - `Login.jsx` → Page de connexion
+  - `Register.jsx` → Page d’inscription
+  - `Inviter.jsx` → Page d’attente pour les utilisateurs sans rôle
+  - `MyPosts.jsx` → Page pour les utilisateurs avec rôle `publisher` (gestion de leurs publications)
+  - `PendingNews.jsx` → Page pour les modérateurs/admins pour approuver/rejeter les actualités
+  - `Profile.jsx` → Page profil utilisateur (affichage et modification de la fréquence de notification)
+- `src/api.js` → Configuration Axios avec l’intercepteur pour ajouter le token JWT
+- `src/App.jsx` → Routage principal de l’application
+- `src/index.css` → Styles globaux
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Fonctionnalités principales
 
-### `npm test`
+1. **Authentification**
+   - Page login comme page principale
+   - Récupération et stockage des tokens JWT (`access` et `refresh`) dans `localStorage`
+   - Redirection automatique selon le rôle :
+     - Pas de rôle → `/inviter` (attente de validation par admin)
+     - `admin` → `/admin`
+     - `moderator` → `/moderation`
+     - `publisher` → `/myposts`
+     - `student` → `/`
+   
+2. **Inscription**
+   - Création d’utilisateur via `Register.jsx`
+   - Les utilisateurs sans rôle sont redirigés vers `/inviter` après inscription
+   - Attribution du rôle par un administrateur nécessaire avant première connexion complète
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. **Gestion des publications**
+   - Les `publisher` peuvent créer et gérer leurs actualités
+   - Sélection du programme, importance, date souhaitée de publication
+   - Liste des actualités publiées avec statut
 
-### `npm run build`
+4. **Modération des actualités**
+   - Les `admin` et `moderator` peuvent approuver ou rejeter les actualités en attente
+   - Notification visuelle après action
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+5. **Profil utilisateur**
+   - Affichage des informations personnelles
+   - Les `student` peuvent modifier la fréquence de notifications
+   - Les autres rôles ont un profil en lecture seule
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Installation et lancement
 
-### `npm run eject`
+1. **Cloner le projet**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+git clone <URL_DU_REPO_FRONTEND>
+cd <NOM_DU_PROJET>
+Installer les dépendances
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+bash
+Copier le code
+npm install
+Configurer l’URL de l’API
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Créer un fichier .env à la racine :
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+env
+Copier le code
+VITE_API_URL=http://127.0.0.1:8000/api
+ Assurez-vous que le backend Django tourne sur cette URL.
 
-## Learn More
+Lancer le serveur de développement
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+bash
+Copier le code
+npm start
+Le front-end sera accessible sur http://localhost:3000
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+ Notes techniques
+Axios est configuré avec un intercepteur pour inclure automatiquement le token JWT dans chaque requête.
 
-### Code Splitting
+Les utilisateurs sans rôle sont redirigés vers /inviter en attendant l’attribution de leur rôle.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Les pages sont protégées et redirigent l’utilisateur selon son rôle stocké dans localStorage.
 
-### Analyzing the Bundle Size
+Tailwind CSS est utilisé pour le style moderne et responsive.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Flux utilisateur
+L’utilisateur arrive sur la page Login.
 
-### Making a Progressive Web App
+Si nouveau → inscription sur Register.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Après inscription → redirection vers Inviter (en attente de rôle).
 
-### Advanced Configuration
+L’administrateur attribue un rôle via le backend.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+L’utilisateur peut se reconnecter → redirection vers sa page selon son rôle.
 
-### Deployment
+Rôles et redirections
+Rôle	Page cible
+admin	/admin
+moderator	/moderation
+publisher	/myposts
+student	/
+aucun	/inviter
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Dépendances principales
+React 18+
 
-### `npm run build` fails to minify
+Axios
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Tailwind CSS
+
+React Router DOM
